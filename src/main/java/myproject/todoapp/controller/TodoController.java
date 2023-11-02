@@ -55,4 +55,22 @@ public class TodoController {
 
         return ResponseEntity.ok().body(response);
     }
+
+    @PutMapping
+    public ResponseEntity<?> updateTodo(@RequestBody TodoDTO dto) {
+        String temporaryUserId = "temporary-user"; // TODO 인증, 인가 기능 추가 후 수정
+
+        TodoEntity todoEntity = TodoDTO.toEntity(dto);
+
+        todoEntity.assignLoggedInUserID(temporaryUserId);
+
+        List<TodoEntity> todoEntities = todoService.update(todoEntity);
+
+        List<TodoDTO> dtos = todoEntities.stream().map(TodoDTO::new).collect(Collectors.toList());
+
+        ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+        return ResponseEntity.ok().body(response);
+
+    }
 }
