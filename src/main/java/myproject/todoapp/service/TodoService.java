@@ -7,6 +7,7 @@ import myproject.todoapp.persistence.TodoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,6 +29,19 @@ public class TodoService {
 
     public List<TodoEntity> retrieve(final String userId) {
         return todoRepository.findByUserId(userId);
+    }
+
+    public List<TodoEntity> update(final TodoEntity entity) {
+        validate(entity);
+
+        final Optional<TodoEntity> original = todoRepository.findById(entity.getId());
+
+        original.ifPresent(todo -> {
+            todo.updateTodo(entity.getTitle(), entity.isDone());
+            todoRepository.save(todo);
+        });
+
+        return retrieve(entity.getUserId());
     }
 
     private void validate(TodoEntity entity) {

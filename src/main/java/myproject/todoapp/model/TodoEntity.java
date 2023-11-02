@@ -21,4 +21,9 @@ public class TodoEntity {
         this.userId = loggedUserId;
     }
 
+    public void updateTodo(String title, boolean done) {
+        this.title = title;
+        this.done = done;
+    }
+
 }
