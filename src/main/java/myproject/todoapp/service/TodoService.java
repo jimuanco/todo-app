@@ -26,6 +26,10 @@ public class TodoService {
         return todoRepository.findByUserId(entity.getUserId());
     }
 
+    public List<TodoEntity> retrieve(final String userId) {
+        return todoRepository.findByUserId(userId);
+    }
+
     private void validate(TodoEntity entity) {
         if (entity == null) {
             log.warn("Entity cannot be null.");
