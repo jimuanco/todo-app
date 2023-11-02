@@ -73,4 +73,25 @@ public class TodoController {
         return ResponseEntity.ok().body(response);
 
     }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteTodo(@RequestBody TodoDTO dto) {
+        try {
+            String temporaryUserId = "temporary-user"; // TODO 인증, 인가 기능 추가 후 수정
+
+            TodoEntity todoEntity = TodoDTO.toEntity(dto);
+            todoEntity.assignLoggedInUserID(temporaryUserId);
+
+            List<TodoEntity> todoEntities = todoService.delete(todoEntity);
+
+            List<TodoDTO> dtos = todoEntities.stream().map(TodoDTO::new).collect(Collectors.toList());
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            String error = e.getMessage();
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+            return ResponseEntity.ok().body(response);
+        }
+    }
 }
