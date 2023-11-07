@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import myproject.todoapp.dto.ResponseDTO;
 import myproject.todoapp.dto.UserDTO;
 import myproject.todoapp.model.UserEntity;
+import myproject.todoapp.security.TokenProvider;
 import myproject.todoapp.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
@@ -50,10 +52,15 @@ public class UserController {
         UserEntity user = userService.getByCredentials(userDTO.getUsername(), userDTO.getPassword());
 
         if (user != null) {
+            //토큰 생성
+            final String token = tokenProvider.create(user);
+
             final UserDTO responseUserDTO = UserDTO.builder()
                     .username(user.getUsername())
                     .id(user.getId())
+                    .token(token)
                     .build();
+
             return ResponseEntity.ok().body(responseUserDTO);
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder().error("Login failed.").build();
