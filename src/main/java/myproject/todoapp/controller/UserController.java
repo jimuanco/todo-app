@@ -8,6 +8,8 @@ import myproject.todoapp.model.UserEntity;
 import myproject.todoapp.security.TokenProvider;
 import myproject.todoapp.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ public class UserController {
 
     private final UserService userService;
     private final TokenProvider tokenProvider;
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
@@ -31,7 +34,7 @@ public class UserController {
 
             UserEntity user = UserEntity.builder()
                     .username(userDTO.getUsername())
-                    .password(userDTO.getPassword())
+                    .password(passwordEncoder.encode(userDTO.getPassword()))
                     .build();
 
             UserEntity registeredUser = userService.create(user);
@@ -49,7 +52,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-        UserEntity user = userService.getByCredentials(userDTO.getUsername(), userDTO.getPassword());
+        UserEntity user = userService.getByCredentials(userDTO.getUsername(), userDTO.getPassword(), passwordEncoder);
 
         if (user != null) {
             //토큰 생성
