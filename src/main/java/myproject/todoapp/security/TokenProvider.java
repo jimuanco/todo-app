@@ -32,13 +32,19 @@ public class TokenProvider {
     }
 
     public String validateAndGetUserId(String token) {
-        Claims claims = Jwts.parser()
+        return extracAllClaims(token).getSubject();
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extracAllClaims(token).getExpiration().before(new Date());
+    }
+
+    private Claims extracAllClaims(String token) {
+        return Jwts.parser()
                 .verifyWith(getSignInKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
-        return claims.getSubject();
     }
 
     private SecretKey getSignInKey() {
