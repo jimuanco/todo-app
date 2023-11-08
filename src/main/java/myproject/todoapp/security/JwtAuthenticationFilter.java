@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (!tokenProvider.isTokenExpired(token)) {
                     //인증 완료, SecurityContextHolder에 등록해야 인증된 사용자라고 생각한다.
                     AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userId, //인증된 사용자의 정보. 보통 UserDetails 넣음
+                            userId, //인증된 사용자의 정보. 보통 UserDetails 넣음 (@AuthenticationPrincipal로 사용)
                             null,
                             AuthorityUtils.NO_AUTHORITIES
                     );
